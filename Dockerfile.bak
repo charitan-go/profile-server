@@ -1,0 +1,36 @@
+# Step 1: Build stage
+FROM golang:1.23-alpine as builder
+
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy the Go Modules and Sum Files
+COPY go.mod go.sum ./
+
+# Download all dependencies. Dependencies are cached if the go.mod and go.sum files are not changed
+RUN go mod tidy
+
+# Copy the source code into the container
+COPY . .
+
+# Build the Go app (main.go is located in cmd/)
+RUN GOOS=linux GOARCH=amd64 go build -o profile-server ./cmd
+
+# Step 2: Run stage
+FROM alpine:latest
+
+# Install necessary dependencies (for example, for SSL support)
+RUN apk --no-cache add ca-certificates
+
+# Set the Current Working Directory inside the container
+WORKDIR /root/
+
+# Copy the compiled binary from the builder stage
+COPY --from=builder /app/profile-server .
+
+# Expose the port the service will run on
+EXPOSE 8090
+
+# Run the service
+CMD ["./profile-server"]
+
