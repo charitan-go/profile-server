@@ -6,6 +6,6 @@ WORKDIR /app
 
 RUN go mod tidy 
 
-EXPOSE 8090 
+EXPOSE 8090 50051
 
 ENTRYPOINT ["go", "run", "./cmd"]
