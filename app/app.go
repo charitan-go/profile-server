@@ -8,7 +8,7 @@ import (
 	donor "github.com/charitan-go/profile-server/domain/donor/handler"
 	"github.com/charitan-go/profile-server/pkg/database"
 	"github.com/charitan-go/profile-server/pkg/discovery"
-	protoserver "github.com/charitan-go/profile-server/pkg/proto/server"
+	"github.com/charitan-go/profile-server/pkg/proto"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 )
@@ -47,7 +47,7 @@ func (app *App) setup() {
 	go database.SetupDatabase()
 
 	// Setup GRPC server
-	go protoserver.SetupGrpcServiceServer()
+	go proto.SetupGrpcServiceServer()
 
 	// Setup routing
 	app.setupRouting()
