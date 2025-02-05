@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/charitan-go/profile-server/api"
-	charity "github.com/charitan-go/profile-server/domain/charity/handler"
-	donor "github.com/charitan-go/profile-server/domain/donor/handler"
+	charity "github.com/charitan-go/profile-server/internal/charity/handler"
+	donor "github.com/charitan-go/profile-server/internal/donor/handler"
 	"github.com/charitan-go/profile-server/pkg/database"
 	"github.com/charitan-go/profile-server/pkg/discovery"
 	"github.com/charitan-go/profile-server/pkg/proto"
@@ -13,10 +13,16 @@ import (
 	"go.uber.org/fx"
 )
 
-type App struct {
-	echo *echo.Echo
+// type App struct {
+// 	echo *echo.Echo
+//
+// 	api *api.Api
+// }
 
-	api *api.Api
+type App struct {
+	rest *rest.RestServer
+
+	proto *proto.ProtoServer
 }
 
 func newApp(echo *echo.Echo, api *api.Api) *App {
@@ -47,7 +53,7 @@ func (app *App) setup() {
 	go database.SetupDatabase()
 
 	// Setup GRPC server
-	go proto.SetupGrpcServiceServer()
+	go proto.SetupProtoServer()
 
 	// Setup routing
 	app.setupRouting()

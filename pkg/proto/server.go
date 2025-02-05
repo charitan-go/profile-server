@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 
+	donorservice "github.com/charitan-go/profile-server/internal/donor/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -14,9 +15,12 @@ import (
 
 type ProfileProtoServer struct {
 	UnimplementedProfileProtoServiceServer
+	donorSvc donorservice.DonorService
 }
 
-func SetupGrpcServiceServer() {
+var profileProtoServer *ProfileProtoServer
+
+func SetupProtoServer() {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
