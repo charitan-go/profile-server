@@ -1,7 +1,7 @@
 package app
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/charitan-go/profile-server/api"
 	charity "github.com/charitan-go/profile-server/domain/charity/handler"
@@ -41,10 +41,10 @@ func (app *App) setupRouting() {
 
 func (app *App) setup() {
 	// Register with service registry
-	discovery.SetupServiceRegistry()
+	go discovery.SetupServiceRegistry()
 
 	// Connect to db
-	database.SetupDatabase()
+	go database.SetupDatabase()
 
 	// Setup GRPC server
 	go protoserver.SetupGrpcServiceServer()
@@ -65,7 +65,7 @@ func Run() {
 			app.setup()
 
 			go app.echo.Start(":8090")
-			fmt.Println("Server started at http://localhost:8090")
+			log.Println("Server started at http://localhost:8090")
 		}),
 	).Run()
 }
