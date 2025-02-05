@@ -28,7 +28,7 @@ func SetupServiceRegistry() {
 		Port:    50051,
 		Tags:    []string{"grpc"},
 		Check: &consulapi.AgentServiceCheck{
-			GRPC:     "profile-service:50051",
+			GRPC:     fmt.Sprintf("%v:%d", address, 50051),
 			Interval: "10s",
 			Timeout:  "5s",
 			// DeregisterCriticalServiceAfter: "30s",
