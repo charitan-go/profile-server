@@ -1,18 +1,18 @@
 package proto
 
 import (
-	context "context"
+	"context"
 	"log"
 	"net"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
-type GrpcServiceServer struct {
+type ProfileProtoServer struct {
 	UnimplementedProfileProtoServiceServer
 }
-
-var grpcServiceServer *GrpcServiceServer
 
 func SetupGrpcServiceServer() {
 	lis, err := net.Listen("tcp", ":50051")
@@ -20,15 +20,20 @@ func SetupGrpcServiceServer() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcServiceServer := grpc.NewServer()
-	RegisterProfileProtoServiceServer(grpcServiceServer, &GrpcServiceServer{})
+	profileProtoServer := grpc.NewServer()
+	RegisterProfileProtoServiceServer(profileProtoServer, &ProfileProtoServer{})
 	log.Println("GRPC server listening on :50051")
-	if err := grpcServiceServer.Serve(lis); err != nil {
+	if err := profileProtoServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(profileProtoServer, healthServer)
+
+	healthServer.SetServingStatus("profile-server-grpc", grpc_health_v1.HealthCheckResponse_SERVING)
 }
 
-func (s *GrpcServiceServer) CreateDonorProfile(
+func (s *ProfileProtoServer) CreateDonorProfile(
 	ctx context.Context,
 	req *CreateDonorProfileRequestDto,
 ) (*CreateDonorProfileResponseDto, error) {
