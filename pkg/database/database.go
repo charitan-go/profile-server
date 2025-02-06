@@ -2,9 +2,9 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/charitan-go/profile-server/internal/donor/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -24,15 +24,27 @@ func connect() error {
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err == nil {
-		log.Println("Connect to database success")
+		fmt.Println("Connect to database success")
 	}
 
 	return err
 }
 
+func migrate() error {
+	if err := DB.AutoMigrate(&model.Donor{}); err != nil {
+		fmt.Println("Migrate failed")
+		return err
+	}
+
+	return nil
+}
+
 func SetupDatabase() error {
-	err := connect()
-	if err != nil {
+	if err := connect(); err != nil {
+		return err
+	}
+
+	if err := migrate(); err != nil {
 		return err
 	}
 
