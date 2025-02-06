@@ -5,29 +5,21 @@ import (
 	"log"
 	"os"
 
-	"github.com/charitan-go/profile-server/internal/charity"
-	"github.com/charitan-go/profile-server/internal/donor"
 	"github.com/charitan-go/profile-server/rest/api"
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/fx"
 )
-
-// type Api struct {
-// 	CharityHandler *charity.CharityHandler
-// 	DonorHandler *donor.DonorHandler
-// }
 
 type RestServer struct {
 	echo *echo.Echo
 	api  *api.Api
 }
 
-func newEcho() *echo.Echo {
+func NewEcho() *echo.Echo {
 	return echo.New()
 }
 
-func newRestServer(echo *echo.Echo, api *api.Api) *RestServer {
+func NewRestServer(echo *echo.Echo, api *api.Api) *RestServer {
 	return &RestServer{echo, api}
 }
 
@@ -68,6 +60,8 @@ func (s *RestServer) setupServiceRegistry() {
 	err = consul.Agent().ServiceRegister(restRegistration)
 	if err != nil {
 		log.Fatalf("Failed to register REST service with Consul: %v", err)
+	} else {
+		log.Println("Setup service registry for grpc service ok")
 	}
 }
 
@@ -79,23 +73,11 @@ func (s *RestServer) setup() {
 	s.setupServiceRegistry()
 }
 
-func Run() {
+func (s *RestServer) Run() {
 	log.Println("Start run rest server")
 
-	fx.New(
-		donor.DonorModule,
-		charity.CharityModule,
+	s.setup()
 
-		fx.Provide(
-			newRestServer,
-			newEcho,
-			api.NewApi,
-		),
-		fx.Invoke(func(s *RestServer) {
-			s.setup()
-
-			s.echo.Start(":8090")
-			log.Println("Server started at http://localhost:8090")
-		}),
-	).Run()
+	s.echo.Start(":8090")
+	log.Println("Server started at http://localhost:8090")
 }

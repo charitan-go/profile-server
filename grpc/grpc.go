@@ -7,11 +7,9 @@ import (
 	"net"
 	"os"
 
-	"github.com/charitan-go/profile-server/internal/donor"
 	donorservice "github.com/charitan-go/profile-server/internal/donor/service"
 	"github.com/charitan-go/profile-server/pkg/proto"
 	consulapi "github.com/hashicorp/consul/api"
-	"go.uber.org/fx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -19,19 +17,17 @@ import (
 
 type GrpcServer struct {
 	proto.UnimplementedProfileGrpcServiceServer
-	donorSvc donorservice.DonorService
+	donorSvc   donorservice.DonorService
+	grpcServer *grpc.Server
 }
 
-func newGrpcServer(donorSvc donorservice.DonorService) *GrpcServer {
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
+func NewGrpcServer(donorSvc donorservice.DonorService) *GrpcServer {
 	grpcServer := grpc.NewServer()
 	profileGrpcServer := &GrpcServer{}
+
 	proto.RegisterProfileGrpcServiceServer(grpcServer, profileGrpcServer)
 	profileGrpcServer.donorSvc = donorSvc
+	profileGrpcServer.grpcServer = grpcServer
 
 	address := os.Getenv("SERVICE_ID")
 	grpcServiceName := fmt.Sprintf("%s-grpc", address)
@@ -39,16 +35,11 @@ func newGrpcServer(donorSvc donorservice.DonorService) *GrpcServer {
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 	healthServer.SetServingStatus(grpcServiceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
-	log.Println("GRPC server listening on :50051")
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-
 	return profileGrpcServer
 }
 
 func (*GrpcServer) setupServiceRegistry() {
-	log.Println("Start for service discovery")
+	log.Println("Start for grpc service registry")
 
 	config := consulapi.DefaultConfig()
 	config.Address = os.Getenv("SERVICE_REGISTRY_URI")
@@ -77,28 +68,29 @@ func (*GrpcServer) setupServiceRegistry() {
 	err = consul.Agent().ServiceRegister(grpcRegistration)
 	if err != nil {
 		log.Fatalf("Failed to register gRPC service with Consul: %v", err)
+	} else {
+		log.Println("Register grpc service successfully")
 	}
 }
 
 func (s *GrpcServer) CreateDonorProfile(
 	ctx context.Context,
-	req *proto.CreateDonorProfileRequestDto,
+	reqDto *proto.CreateDonorProfileRequestDto,
 ) (*proto.CreateDonorProfileResponseDto, error) {
-	log.Println(req.FirstName)
-	return &proto.CreateDonorProfileResponseDto{ProfileReadableId: "32312432"}, nil
+	resDto, err := s.donorSvc.CreateDonorProfile(reqDto)
+	return resDto, err
 }
 
-func Run() {
-	log.Println("Start run proto server")
+func (s *GrpcServer) Run() {
+	s.setupServiceRegistry()
+	log.Println("Setup service registry for grpc service ok")
 
-	fx.New(
-		donor.DonorModule,
-
-		fx.Provide(
-			newGrpcServer,
-		),
-		fx.Invoke(func(s *GrpcServer) {
-			s.setupServiceRegistry()
-		}),
-	).Run()
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	log.Println("GRPC server listening on :50051")
+	if err := s.grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }
