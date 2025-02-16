@@ -77,7 +77,15 @@ func (s *GrpcServer) CreateDonorProfile(
 	ctx context.Context,
 	reqDto *proto.CreateDonorProfileRequestDto,
 ) (*proto.CreateDonorProfileResponseDto, error) {
-	resDto, err := s.donorSvc.CreateDonorProfile(reqDto)
+	resDto, err := s.donorSvc.HandleCreateDonorProfileGrpc(reqDto)
+	return resDto, err
+}
+
+func (s *GrpcServer) GetDonorProfile(
+	ctx context.Context,
+	reqDto *proto.GetDonorProfileRequestDto,
+) (*proto.GetDonorProfileResponseDto, error) {
+	resDto, err := s.donorSvc.HandleGetDonorProfileGrpc(reqDto)
 	return resDto, err
 }
 

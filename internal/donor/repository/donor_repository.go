@@ -8,6 +8,8 @@ import (
 
 type DonorRepository interface {
 	Save(*model.Donor) (*model.Donor, error)
+
+	FindOneByReadableId(readableId string) (*model.Donor, error)
 }
 
 type donorRepositoryImpl struct {
@@ -25,4 +27,16 @@ func (r *donorRepositoryImpl) Save(donorModel *model.Donor) (*model.Donor, error
 	}
 
 	return donorModel, nil
+}
+
+// FindOneByReadableId implements DonorRepository.
+func (r *donorRepositoryImpl) FindOneByReadableId(readableId string) (*model.Donor, error) {
+	var donor model.Donor
+
+	result := r.db.Where("readableId = ?", readableId).First(&donor)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &donor, nil
 }
