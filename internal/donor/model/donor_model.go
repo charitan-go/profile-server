@@ -13,7 +13,7 @@ type Donor struct {
 	ReadableId uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
 	FirstName  string    `gorm:"type:varchar(255);not null;unique"`
 	LastName   string    `gorm:"type:varchar(255);not null;unique"`
-	Address    string    `gorm:"type:varchar(255);unique"`
+	Address    string    `gorm:"type:varchar(255)"`
 	createdAt  time.Time
 	updatedAt  time.Time
 }
