@@ -5,13 +5,25 @@ option go_package = "./pkg/proto";
 service ProfileGrpcService {
   rpc CreateDonorProfile(CreateDonorProfileRequestDto)
       returns (CreateDonorProfileResponseDto);
+
+  rpc GetDonorProfile(GetDonorProfileRequestDto) 
+    returns (GetDonorProfileResponseDto);
 }
 
 message CreateDonorProfileRequestDto {
   string firstName = 1;
   string lastName = 2;
   string address = 3;
-  string role = 4;
 }
 
 message CreateDonorProfileResponseDto { string profileReadableId = 1; }
+
+message GetDonorProfileRequestDto {
+    string profileReadableId = 1;
+  }
+
+message GetDonorProfileResponseDto {
+    string firstName = 1;
+    string lastName = 2;
+    string address = 3;
+  }

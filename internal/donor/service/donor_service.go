@@ -9,7 +9,9 @@ import (
 )
 
 type DonorService interface {
-	CreateDonorProfile(*proto.CreateDonorProfileRequestDto) (*proto.CreateDonorProfileResponseDto, error)
+	// GRPC
+	HandleCreateDonorProfileGrpc(*proto.CreateDonorProfileRequestDto) (*proto.CreateDonorProfileResponseDto, error)
+	HandleGetDonorProfileGrpc(reqDto *proto.GetDonorProfileRequestDto) (*proto.GetDonorProfileResponseDto, error)
 }
 
 type donorServiceImpl struct {
@@ -25,7 +27,7 @@ func NewExternalDonorService() DonorService {
 	return &donorServiceImpl{r}
 }
 
-func (svc *donorServiceImpl) CreateDonorProfile(reqDto *proto.CreateDonorProfileRequestDto) (*proto.CreateDonorProfileResponseDto, error) {
+func (svc *donorServiceImpl) HandleCreateDonorProfileGrpc(reqDto *proto.CreateDonorProfileRequestDto) (*proto.CreateDonorProfileResponseDto, error) {
 	donorModel := model.NewDonor(reqDto)
 
 	// Save to db
@@ -36,4 +38,22 @@ func (svc *donorServiceImpl) CreateDonorProfile(reqDto *proto.CreateDonorProfile
 	}
 
 	return donorModel.ToCreateDonorProfileResponseDto(), nil
+}
+
+func (svc *donorServiceImpl) HandleGetDonorProfileGrpc(reqDto *proto.GetDonorProfileRequestDto) (*proto.GetDonorProfileResponseDto, error) {
+
+	profileReadableId := reqDto.ProfileReadableId
+	donor, err := svc.r.FindOneByReadableId(profileReadableId)
+	if err != nil {
+		log.Printf("Cannot find donor with donorId: %s\n", profileReadableId)
+		return nil, err
+	}
+
+	resDto := &proto.GetDonorProfileResponseDto{
+		FirstName: donor.FirstName,
+		LastName:  donor.LastName,
+		Address:   donor.Address,
+	}
+
+	return resDto, nil
 }

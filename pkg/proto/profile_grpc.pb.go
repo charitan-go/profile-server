@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	ProfileGrpcService_CreateDonorProfile_FullMethodName = "/ProfileGrpcService/CreateDonorProfile"
+	ProfileGrpcService_GetDonorProfile_FullMethodName    = "/ProfileGrpcService/GetDonorProfile"
 )
 
 // ProfileGrpcServiceClient is the client API for ProfileGrpcService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProfileGrpcServiceClient interface {
 	CreateDonorProfile(ctx context.Context, in *CreateDonorProfileRequestDto, opts ...grpc.CallOption) (*CreateDonorProfileResponseDto, error)
+	GetDonorProfile(ctx context.Context, in *GetDonorProfileRequestDto, opts ...grpc.CallOption) (*GetDonorProfileResponseDto, error)
 }
 
 type profileGrpcServiceClient struct {
@@ -47,11 +49,22 @@ func (c *profileGrpcServiceClient) CreateDonorProfile(ctx context.Context, in *C
 	return out, nil
 }
 
+func (c *profileGrpcServiceClient) GetDonorProfile(ctx context.Context, in *GetDonorProfileRequestDto, opts ...grpc.CallOption) (*GetDonorProfileResponseDto, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDonorProfileResponseDto)
+	err := c.cc.Invoke(ctx, ProfileGrpcService_GetDonorProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileGrpcServiceServer is the server API for ProfileGrpcService service.
 // All implementations must embed UnimplementedProfileGrpcServiceServer
 // for forward compatibility.
 type ProfileGrpcServiceServer interface {
 	CreateDonorProfile(context.Context, *CreateDonorProfileRequestDto) (*CreateDonorProfileResponseDto, error)
+	GetDonorProfile(context.Context, *GetDonorProfileRequestDto) (*GetDonorProfileResponseDto, error)
 	mustEmbedUnimplementedProfileGrpcServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedProfileGrpcServiceServer struct{}
 
 func (UnimplementedProfileGrpcServiceServer) CreateDonorProfile(context.Context, *CreateDonorProfileRequestDto) (*CreateDonorProfileResponseDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDonorProfile not implemented")
+}
+func (UnimplementedProfileGrpcServiceServer) GetDonorProfile(context.Context, *GetDonorProfileRequestDto) (*GetDonorProfileResponseDto, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDonorProfile not implemented")
 }
 func (UnimplementedProfileGrpcServiceServer) mustEmbedUnimplementedProfileGrpcServiceServer() {}
 func (UnimplementedProfileGrpcServiceServer) testEmbeddedByValue()                            {}
@@ -104,6 +120,24 @@ func _ProfileGrpcService_CreateDonorProfile_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileGrpcService_GetDonorProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDonorProfileRequestDto)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileGrpcServiceServer).GetDonorProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileGrpcService_GetDonorProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileGrpcServiceServer).GetDonorProfile(ctx, req.(*GetDonorProfileRequestDto))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileGrpcService_ServiceDesc is the grpc.ServiceDesc for ProfileGrpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var ProfileGrpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateDonorProfile",
 			Handler:    _ProfileGrpcService_CreateDonorProfile_Handler,
+		},
+		{
+			MethodName: "GetDonorProfile",
+			Handler:    _ProfileGrpcService_GetDonorProfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
