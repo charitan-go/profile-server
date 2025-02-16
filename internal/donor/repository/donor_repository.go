@@ -33,7 +33,7 @@ func (r *donorRepositoryImpl) Save(donorModel *model.Donor) (*model.Donor, error
 func (r *donorRepositoryImpl) FindOneByReadableId(readableId string) (*model.Donor, error) {
 	var donor model.Donor
 
-	result := r.db.Where("readableId = ?", readableId).First(&donor)
+	result := r.db.Where("readable_id = ?", readableId).First(&donor)
 	if result.Error != nil {
 		return nil, result.Error
 	}
