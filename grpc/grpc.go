@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 
+	charityservice "github.com/charitan-go/profile-server/internal/charity/service"
 	donorservice "github.com/charitan-go/profile-server/internal/donor/service"
 	"github.com/charitan-go/profile-server/pkg/proto"
 	consulapi "github.com/hashicorp/consul/api"
@@ -18,6 +19,7 @@ import (
 type GrpcServer struct {
 	proto.UnimplementedProfileGrpcServiceServer
 	donorSvc   donorservice.DonorService
+	charitySvc charityservice.CharityService
 	grpcServer *grpc.Server
 }
 
@@ -78,6 +80,14 @@ func (s *GrpcServer) CreateDonorProfile(
 	reqDto *proto.CreateDonorProfileRequestDto,
 ) (*proto.CreateDonorProfileResponseDto, error) {
 	resDto, err := s.donorSvc.HandleCreateDonorProfileGrpc(reqDto)
+	return resDto, err
+}
+
+func (s *GrpcServer) CreateCharityProfile(
+	ctx context.Context,
+	reqDto *proto.CreateCharityProfileRequestDto,
+) (*proto.CreateCharityProfileResponseDto, error) {
+	resDto, err := s.charitySvc.HandleCreateCharityProfileGrpc(reqDto)
 	return resDto, err
 }
 

@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"github.com/charitan-go/profile-server/pkg/proto"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -29,10 +30,12 @@ func (c *Charity) BeforeCreate(db *gorm.DB) (err error) {
 	return nil
 }
 
-// func NewCharity(reqDto *proto.CreateCharityProfileRequestDto) *Charity {
-// 	return &Charity{
-// 		FirstName: reqDto.FirstName,
-// 		LastName:  reqDto.LastName,
-// 		Address:   reqDto.Address,
-// 	}
-// }
+func NewCharity(reqDto *proto.CreateCharityProfileRequestDto) *Charity {
+	return &Charity{
+		// FirstName: reqDto.FirstName,
+		// LastName:  reqDto.LastName,
+		OrganizationName: reqDto.OrganizationName,
+		TaxCode:          reqDto.TaxCode,
+		Address:          reqDto.Address,
+	}
+}
