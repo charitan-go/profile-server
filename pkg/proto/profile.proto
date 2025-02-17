@@ -5,6 +5,9 @@ option go_package = "./pkg/proto";
 service ProfileGrpcService {
   rpc CreateDonorProfile(CreateDonorProfileRequestDto)
       returns (CreateDonorProfileResponseDto);
+  
+  rpc CreateCharityProfile(CreateCharityProfileRequestDto)
+    returns (CreateCharityProfileResponseDto);
 
   rpc GetDonorProfile(GetDonorProfileRequestDto) 
     returns (GetDonorProfileResponseDto);
@@ -18,6 +21,14 @@ message CreateDonorProfileRequestDto {
 
 message CreateDonorProfileResponseDto { string profileReadableId = 1; }
 
+message CreateCharityProfileRequestDto {
+  string organizationName = 1;
+  string taxCode = 2;
+  string address = 3;
+}
+
+message CreateCharityProfileResponseDto { string profileReadableId = 1; }
+
 message GetDonorProfileRequestDto {
     string profileReadableId = 1;
   }
@@ -27,3 +38,4 @@ message GetDonorProfileResponseDto {
     string lastName = 2;
     string address = 3;
   }
+
