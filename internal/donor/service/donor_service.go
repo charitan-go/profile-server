@@ -27,6 +27,13 @@ func NewExternalDonorService() DonorService {
 	return &donorServiceImpl{r}
 }
 
+func (svc *donorServiceImpl) toCreateDonorProfileResponseDto(donor *model.Donor) *proto.CreateDonorProfileResponseDto {
+	result := &proto.CreateDonorProfileResponseDto{
+		ProfileReadableId: donor.ReadableId.String(),
+	}
+	return result
+}
+
 func (svc *donorServiceImpl) HandleCreateDonorProfileGrpc(reqDto *proto.CreateDonorProfileRequestDto) (*proto.CreateDonorProfileResponseDto, error) {
 	donorModel := model.NewDonor(reqDto)
 

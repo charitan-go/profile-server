@@ -5,7 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/charitan-go/profile-server/internal/donor/model"
+	charitymodel "github.com/charitan-go/profile-server/internal/charity/model"
+	donormodel "github.com/charitan-go/profile-server/internal/donor/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -32,7 +33,7 @@ func connect() error {
 }
 
 func migrate() error {
-	if err := DB.AutoMigrate(&model.Donor{}); err != nil {
+	if err := DB.AutoMigrate(&donormodel.Donor{}, &charitymodel.Charity{}); err != nil {
 		fmt.Println("Migrate failed")
 		return err
 	}

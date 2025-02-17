@@ -19,8 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProfileGrpcService_CreateDonorProfile_FullMethodName = "/ProfileGrpcService/CreateDonorProfile"
-	ProfileGrpcService_GetDonorProfile_FullMethodName    = "/ProfileGrpcService/GetDonorProfile"
+	ProfileGrpcService_CreateDonorProfile_FullMethodName   = "/ProfileGrpcService/CreateDonorProfile"
+	ProfileGrpcService_CreateCharityProfile_FullMethodName = "/ProfileGrpcService/CreateCharityProfile"
+	ProfileGrpcService_GetDonorProfile_FullMethodName      = "/ProfileGrpcService/GetDonorProfile"
+	ProfileGrpcService_GetCharityProfile_FullMethodName    = "/ProfileGrpcService/GetCharityProfile"
 )
 
 // ProfileGrpcServiceClient is the client API for ProfileGrpcService service.
@@ -28,7 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProfileGrpcServiceClient interface {
 	CreateDonorProfile(ctx context.Context, in *CreateDonorProfileRequestDto, opts ...grpc.CallOption) (*CreateDonorProfileResponseDto, error)
+	CreateCharityProfile(ctx context.Context, in *CreateCharityProfileRequestDto, opts ...grpc.CallOption) (*CreateCharityProfileResponseDto, error)
 	GetDonorProfile(ctx context.Context, in *GetDonorProfileRequestDto, opts ...grpc.CallOption) (*GetDonorProfileResponseDto, error)
+	GetCharityProfile(ctx context.Context, in *GetCharityProfileRequestDto, opts ...grpc.CallOption) (*GetCharityProfileResponseDto, error)
 }
 
 type profileGrpcServiceClient struct {
@@ -49,10 +53,30 @@ func (c *profileGrpcServiceClient) CreateDonorProfile(ctx context.Context, in *C
 	return out, nil
 }
 
+func (c *profileGrpcServiceClient) CreateCharityProfile(ctx context.Context, in *CreateCharityProfileRequestDto, opts ...grpc.CallOption) (*CreateCharityProfileResponseDto, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCharityProfileResponseDto)
+	err := c.cc.Invoke(ctx, ProfileGrpcService_CreateCharityProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *profileGrpcServiceClient) GetDonorProfile(ctx context.Context, in *GetDonorProfileRequestDto, opts ...grpc.CallOption) (*GetDonorProfileResponseDto, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetDonorProfileResponseDto)
 	err := c.cc.Invoke(ctx, ProfileGrpcService_GetDonorProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileGrpcServiceClient) GetCharityProfile(ctx context.Context, in *GetCharityProfileRequestDto, opts ...grpc.CallOption) (*GetCharityProfileResponseDto, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCharityProfileResponseDto)
+	err := c.cc.Invoke(ctx, ProfileGrpcService_GetCharityProfile_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +88,9 @@ func (c *profileGrpcServiceClient) GetDonorProfile(ctx context.Context, in *GetD
 // for forward compatibility.
 type ProfileGrpcServiceServer interface {
 	CreateDonorProfile(context.Context, *CreateDonorProfileRequestDto) (*CreateDonorProfileResponseDto, error)
+	CreateCharityProfile(context.Context, *CreateCharityProfileRequestDto) (*CreateCharityProfileResponseDto, error)
 	GetDonorProfile(context.Context, *GetDonorProfileRequestDto) (*GetDonorProfileResponseDto, error)
+	GetCharityProfile(context.Context, *GetCharityProfileRequestDto) (*GetCharityProfileResponseDto, error)
 	mustEmbedUnimplementedProfileGrpcServiceServer()
 }
 
@@ -78,8 +104,14 @@ type UnimplementedProfileGrpcServiceServer struct{}
 func (UnimplementedProfileGrpcServiceServer) CreateDonorProfile(context.Context, *CreateDonorProfileRequestDto) (*CreateDonorProfileResponseDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDonorProfile not implemented")
 }
+func (UnimplementedProfileGrpcServiceServer) CreateCharityProfile(context.Context, *CreateCharityProfileRequestDto) (*CreateCharityProfileResponseDto, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCharityProfile not implemented")
+}
 func (UnimplementedProfileGrpcServiceServer) GetDonorProfile(context.Context, *GetDonorProfileRequestDto) (*GetDonorProfileResponseDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDonorProfile not implemented")
+}
+func (UnimplementedProfileGrpcServiceServer) GetCharityProfile(context.Context, *GetCharityProfileRequestDto) (*GetCharityProfileResponseDto, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCharityProfile not implemented")
 }
 func (UnimplementedProfileGrpcServiceServer) mustEmbedUnimplementedProfileGrpcServiceServer() {}
 func (UnimplementedProfileGrpcServiceServer) testEmbeddedByValue()                            {}
@@ -120,6 +152,24 @@ func _ProfileGrpcService_CreateDonorProfile_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileGrpcService_CreateCharityProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCharityProfileRequestDto)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileGrpcServiceServer).CreateCharityProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileGrpcService_CreateCharityProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileGrpcServiceServer).CreateCharityProfile(ctx, req.(*CreateCharityProfileRequestDto))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ProfileGrpcService_GetDonorProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDonorProfileRequestDto)
 	if err := dec(in); err != nil {
@@ -138,6 +188,24 @@ func _ProfileGrpcService_GetDonorProfile_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileGrpcService_GetCharityProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCharityProfileRequestDto)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileGrpcServiceServer).GetCharityProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProfileGrpcService_GetCharityProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileGrpcServiceServer).GetCharityProfile(ctx, req.(*GetCharityProfileRequestDto))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileGrpcService_ServiceDesc is the grpc.ServiceDesc for ProfileGrpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -150,8 +218,16 @@ var ProfileGrpcService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProfileGrpcService_CreateDonorProfile_Handler,
 		},
 		{
+			MethodName: "CreateCharityProfile",
+			Handler:    _ProfileGrpcService_CreateCharityProfile_Handler,
+		},
+		{
 			MethodName: "GetDonorProfile",
 			Handler:    _ProfileGrpcService_GetDonorProfile_Handler,
+		},
+		{
+			MethodName: "GetCharityProfile",
+			Handler:    _ProfileGrpcService_GetCharityProfile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

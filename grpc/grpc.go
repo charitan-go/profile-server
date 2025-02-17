@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 
+	charityservice "github.com/charitan-go/profile-server/internal/charity/service"
 	donorservice "github.com/charitan-go/profile-server/internal/donor/service"
 	"github.com/charitan-go/profile-server/pkg/proto"
 	consulapi "github.com/hashicorp/consul/api"
@@ -18,15 +19,17 @@ import (
 type GrpcServer struct {
 	proto.UnimplementedProfileGrpcServiceServer
 	donorSvc   donorservice.DonorService
+	charitySvc charityservice.CharityService
 	grpcServer *grpc.Server
 }
 
-func NewGrpcServer(donorSvc donorservice.DonorService) *GrpcServer {
+func NewGrpcServer(donorSvc donorservice.DonorService, charitySvc charityservice.CharityService) *GrpcServer {
 	grpcServer := grpc.NewServer()
 	profileGrpcServer := &GrpcServer{}
 
 	proto.RegisterProfileGrpcServiceServer(grpcServer, profileGrpcServer)
 	profileGrpcServer.donorSvc = donorSvc
+	profileGrpcServer.charitySvc = charitySvc
 	profileGrpcServer.grpcServer = grpcServer
 
 	address := os.Getenv("SERVICE_ID")
@@ -81,11 +84,28 @@ func (s *GrpcServer) CreateDonorProfile(
 	return resDto, err
 }
 
+func (s *GrpcServer) CreateCharityProfile(
+	ctx context.Context,
+	reqDto *proto.CreateCharityProfileRequestDto,
+) (*proto.CreateCharityProfileResponseDto, error) {
+	log.Println("Go to createCharityProfile")
+	resDto, err := s.charitySvc.HandleCreateCharityProfileGrpc(reqDto)
+	return resDto, err
+}
+
 func (s *GrpcServer) GetDonorProfile(
 	ctx context.Context,
 	reqDto *proto.GetDonorProfileRequestDto,
 ) (*proto.GetDonorProfileResponseDto, error) {
 	resDto, err := s.donorSvc.HandleGetDonorProfileGrpc(reqDto)
+	return resDto, err
+}
+
+func (s *GrpcServer) GetCharityProfile(
+	ctx context.Context,
+	reqDto *proto.GetCharityProfileRequestDto,
+) (*proto.GetCharityProfileResponseDto, error) {
+	resDto, err := s.charitySvc.HandleGetCharityProfileGrpc(reqDto)
 	return resDto, err
 }
 
