@@ -41,3 +41,13 @@ VALUES
     ('6410dd2d-9b86-4b8c-a44d-f32049ce2fef', 'BrazilFirstName3', 'BrazilLastName3', 'Brazil'),
     ('66180a74-0bfb-4747-99dd-95d9cdaf8da1', 'BrazilFirstName4', 'BrazilLastName4', 'Brazil'),
     ('d51aa6cb-a471-45f8-aa15-34924a3f5c95', 'BrazilFirstName5', 'BrazilLastName5', 'Brazil');
+
+-- Insert corresponding charity profiles into the charities table
+INSERT INTO charities (readable_id, organization_name, tax_code, address)
+VALUES
+    ('a364e55f-2b2d-4180-b29c-c1385cb3c27e', 'Charity One',   'TAX-001', '123 Charity St, Hanoi, Vietnam'),
+    ('209eddd5-561f-4605-9103-07ed9f8e36b2', 'Charity Two',   'TAX-002', '456 Hope Ave, Berlin, Germany'),
+    ('713a7a9f-457f-4159-bb9e-b9835f9313f3', 'Charity Three', 'TAX-003', '789 Relief Rd, Doha, Qatar'),
+    ('6c648bad-4036-4240-9685-199eb7c4e164', 'Charity Four',  'TAX-004', '101 Kindness Blvd, New York, USA'),
+    ('87e36b91-1047-4b3a-ab30-617b03df537a', 'Charity Five',  'TAX-005', '202 Generosity Ln, Yaoundé, Cameroon'),
+    ('3c1e982f-bb78-42c9-8829-690f5ee842ed', 'Charity Six',   'TAX-006', '303 Relief Pkwy, São Paulo, Brazil');
