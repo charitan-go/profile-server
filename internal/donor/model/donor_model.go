@@ -11,8 +11,8 @@ import (
 type Donor struct {
 	id         uuid.UUID `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 	ReadableId uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
-	FirstName  string    `gorm:"type:varchar(255);not null;unique"`
-	LastName   string    `gorm:"type:varchar(255);not null;unique"`
+	FirstName  string    `gorm:"type:varchar(255);not null"`
+	LastName   string    `gorm:"type:varchar(255);not null"`
 	Address    string    `gorm:"type:varchar(255)"`
 	createdAt  time.Time
 	updatedAt  time.Time
